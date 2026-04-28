@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Task, Volunteer, Report, Assignment, mockTasks, mockVolunteers, mockReports, mockAssignments } from '@/lib/mock-data';
-import { addAssignmentToFirestore, addReportToFirestore, addTaskToFirestore, updateTaskInFirestore } from '@/lib/firestore';
+import { addAssignmentToFirestore, addReportToFirestore, addTaskToFirestore, updateTaskInFirestore, addVolunteerToFirestore } from '@/lib/firestore';
 
 type ViewType = 'landing' | 'dashboard' | 'map' | 'reports' | 'volunteers' | 'assignments';
 
