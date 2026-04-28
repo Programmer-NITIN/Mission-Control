@@ -28,6 +28,7 @@ interface AppState {
   // Actions (now with Firestore integration)
   addReport: (report: Report) => void;
   addTask: (task: Task) => void;
+  addVolunteer: (volunteer: Volunteer) => void;
   assignVolunteer: (taskId: string, volunteerId: string, matchScore: number) => void;
   updateTaskStatus: (taskId: string, status: Task['status']) => void;
 
@@ -60,6 +61,12 @@ export const useAppStore = create<AppState>((set) => ({
     // Fire-and-forget Firestore write
     const { id, ...rest } = report;
     addReportToFirestore(rest).catch(console.error);
+  },
+
+  addVolunteer: (volunteer) => {
+    set((state) => ({ volunteers: [volunteer, ...state.volunteers] }));
+    const { id, ...rest } = volunteer;
+    addVolunteerToFirestore(rest).catch(console.error);
   },
 
   addTask: (task) => {

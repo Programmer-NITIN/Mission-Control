@@ -6,10 +6,42 @@ import { useState } from 'react';
 const skillFilters = ['All', 'First Aid', 'Driving', 'Medical', 'Construction', 'Swimming', 'Logistics'];
 
 export default function VolunteersPage() {
-  const { volunteers } = useAppStore();
+  const { volunteers, addVolunteer } = useAppStore();
   const [search, setSearch] = useState('');
   const [skillFilter, setSkillFilter] = useState('All');
   const [availFilter, setAvailFilter] = useState('all');
+
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newVolunteer, setNewVolunteer] = useState({
+    name: '',
+    role: '',
+    skills: '',
+    vehicle: '',
+  });
+
+  const handleAddSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newVolunteer.name || !newVolunteer.role) return;
+
+    addVolunteer({
+      id: `v-${Date.now()}`,
+      name: newVolunteer.name,
+      email: `${newVolunteer.name.toLowerCase().replace(/\s/g, '')}@example.com`,
+      role: newVolunteer.role,
+      skills: newVolunteer.skills.split(',').map(s => s.trim()).filter(Boolean),
+      availability: 'available',
+      location: { lat: 10.0 + Math.random() * 0.1, lng: 76.3 + Math.random() * 0.1 },
+      rating: 5.0,
+      reviewCount: 0,
+      completedTasks: 0,
+      verified: false,
+      avatar: '',
+      vehicle: newVolunteer.vehicle || undefined,
+    });
+    
+    setShowAddModal(false);
+    setNewVolunteer({ name: '', role: '', skills: '', vehicle: '' });
+  };
 
   const filtered = volunteers.filter(v => {
     const matchSearch = v.name.toLowerCase().includes(search.toLowerCase()) || v.role.toLowerCase().includes(search.toLowerCase());
@@ -25,7 +57,7 @@ export default function VolunteersPage() {
           <h1 className="text-headline-xl text-on-surface">Volunteer Network</h1>
           <p className="text-body-sm text-on-surface-variant mt-1">{volunteers.length} registered volunteers across all regions</p>
         </div>
-        <button className="btn-primary">
+        <button onClick={() => setShowAddModal(true)} className="btn-primary">
           <span className="material-symbols-outlined text-[18px]">person_add</span>
           Add Volunteer
         </button>
@@ -140,6 +172,44 @@ export default function VolunteersPage() {
           </div>
         ))}
       </div>
+
+      {/* Add Volunteer Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center animate-fade-in p-4">
+          <div className="bg-surface-container-lowest w-full max-w-md rounded-2xl p-6 shadow-2xl animate-slide-up">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-headline-sm text-on-surface">Add New Volunteer</h2>
+              <button onClick={() => setShowAddModal(false)} className="text-on-surface-variant hover:text-on-surface">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            
+            <form onSubmit={handleAddSubmit} className="space-y-4">
+              <div>
+                <label className="text-label-sm text-on-surface-variant block mb-1">Full Name</label>
+                <input required type="text" value={newVolunteer.name} onChange={e => setNewVolunteer({...newVolunteer, name: e.target.value})} className="w-full px-4 py-2 rounded-lg border border-outline-variant bg-surface-container text-on-surface focus:ring-2 focus:ring-primary-container" placeholder="e.g. Sarah Jenkins" />
+              </div>
+              <div>
+                <label className="text-label-sm text-on-surface-variant block mb-1">Role</label>
+                <input required type="text" value={newVolunteer.role} onChange={e => setNewVolunteer({...newVolunteer, role: e.target.value})} className="w-full px-4 py-2 rounded-lg border border-outline-variant bg-surface-container text-on-surface focus:ring-2 focus:ring-primary-container" placeholder="e.g. Paramedic" />
+              </div>
+              <div>
+                <label className="text-label-sm text-on-surface-variant block mb-1">Skills (comma separated)</label>
+                <input required type="text" value={newVolunteer.skills} onChange={e => setNewVolunteer({...newVolunteer, skills: e.target.value})} className="w-full px-4 py-2 rounded-lg border border-outline-variant bg-surface-container text-on-surface focus:ring-2 focus:ring-primary-container" placeholder="e.g. First Aid, Driving" />
+              </div>
+              <div>
+                <label className="text-label-sm text-on-surface-variant block mb-1">Vehicle (optional)</label>
+                <input type="text" value={newVolunteer.vehicle} onChange={e => setNewVolunteer({...newVolunteer, vehicle: e.target.value})} className="w-full px-4 py-2 rounded-lg border border-outline-variant bg-surface-container text-on-surface focus:ring-2 focus:ring-primary-container" placeholder="e.g. 4x4 Truck" />
+              </div>
+              
+              <div className="flex gap-3 mt-6">
+                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 btn-secondary justify-center">Cancel</button>
+                <button type="submit" className="flex-1 btn-primary justify-center">Add Volunteer</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
