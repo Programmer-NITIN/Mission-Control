@@ -1,8 +1,8 @@
 'use client';
 
-import StatCard from '@/components/ui/StatCard';
-import TaskCard from '@/components/ui/TaskCard';
-import { useAppStore } from '@/store/app-store';
+import StatCard from '@/frontend/components/ui/StatCard';
+import TaskCard from '@/frontend/components/ui/TaskCard';
+import { useAppStore } from '@/frontend/store/app-store';
 import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {

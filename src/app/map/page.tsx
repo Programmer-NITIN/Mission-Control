@@ -1,11 +1,11 @@
 'use client';
 
-import { useAppStore } from '@/store/app-store';
+import { useAppStore } from '@/frontend/store/app-store';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 // Dynamic import required for Leaflet (no SSR)
-const MissionMap = dynamic(() => import('@/components/maps/MissionMap'), {
+const MissionMap = dynamic(() => import('@/frontend/components/maps/MissionMap'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full flex items-center justify-center bg-surface-container">

@@ -1,4 +1,4 @@
-import Navbar from '@/components/layout/Navbar';
+import Navbar from '@/frontend/components/layout/Navbar';
 
 export default function MapLayout({ children }: { children: React.ReactNode }) {
   return (

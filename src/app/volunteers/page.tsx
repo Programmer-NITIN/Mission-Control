@@ -1,6 +1,6 @@
 'use client';
 
-import { useAppStore } from '@/store/app-store';
+import { useAppStore } from '@/frontend/store/app-store';
 import { useState } from 'react';
 
 const skillFilters = ['All', 'First Aid', 'Driving', 'Medical', 'Construction', 'Swimming', 'Logistics'];

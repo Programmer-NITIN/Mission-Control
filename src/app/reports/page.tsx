@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useAppStore } from '@/store/app-store';
-import { processReportWithAI } from '@/lib/gemini';
-import { computePriority } from '@/lib/matching-algorithm';
+import { useAppStore } from '@/frontend/store/app-store';
+import { processReportWithAI } from '@/backend/services/gemini';
+import { computePriority } from '@/backend/services/matching-algorithm';
 
 const categories = ['All', 'disaster', 'health', 'food', 'shelter', 'logistics', 'education'];
 

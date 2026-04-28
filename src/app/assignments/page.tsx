@@ -1,7 +1,7 @@
 'use client';
 
-import { useAppStore } from '@/store/app-store';
-import { matchVolunteers, MatchResult } from '@/lib/matching-algorithm';
+import { useAppStore } from '@/frontend/store/app-store';
+import { matchVolunteers, MatchResult } from '@/backend/services/matching-algorithm';
 import { useState, useEffect } from 'react';
 
 function timeRemaining(createdAt: string): string {

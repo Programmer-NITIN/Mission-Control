@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { isFirebaseConfigured } from '@/lib/firebase';
-import { isGeminiConfigured } from '@/lib/gemini';
+import { useAuth } from '@/frontend/context/AuthContext';
+import { isFirebaseConfigured } from '@/backend/config/firebase';
+import { isGeminiConfigured } from '@/backend/services/gemini';
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: 'dashboard' },

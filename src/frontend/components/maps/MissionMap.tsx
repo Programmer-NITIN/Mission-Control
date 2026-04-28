@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { Map as LeafletMap } from 'leaflet';
-import { Task, Volunteer } from '@/lib/mock-data';
+import { Task, Volunteer } from '@/backend/data/mock-data';
 
 interface MissionMapProps {
   tasks: Task[];

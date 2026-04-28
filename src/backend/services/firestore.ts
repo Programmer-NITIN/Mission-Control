@@ -12,8 +12,8 @@ import {
   Unsubscribe,
   where,
 } from 'firebase/firestore';
-import { db, isFirebaseConfigured } from '@/lib/firebase';
-import { Report, Task, Volunteer, Assignment, mockReports, mockTasks, mockVolunteers, mockAssignments } from '@/lib/mock-data';
+import { db, isFirebaseConfigured } from '@/backend/config/firebase';
+import { Report, Task, Volunteer, Assignment, mockReports, mockTasks, mockVolunteers, mockAssignments } from '@/backend/data/mock-data';
 
 // ─── Collection names ─────────────────────────────────────
 const REPORTS = 'reports';

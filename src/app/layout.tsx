@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "@/frontend/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Mission Control — AI-Powered Volunteer Coordination",

@@ -1,4 +1,4 @@
-import { Task, Volunteer } from './mock-data';
+import { Task, Volunteer } from '@/backend/data/mock-data';
 
 export interface MatchResult {
   volunteer: Volunteer;

@@ -1,6 +1,6 @@
 'use client';
 
-import { Task } from '@/lib/mock-data';
+import { Task } from '@/backend/data/mock-data';
 
 interface TaskCardProps {
   task: Task;
