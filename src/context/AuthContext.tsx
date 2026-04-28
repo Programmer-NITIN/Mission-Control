@@ -51,10 +51,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('[Demo Mode] Simulating Google Sign-In');
       return;
     }
-    const provider = new GoogleAuthProvider();
-    provider.addScope('email');
-    provider.addScope('profile');
-    await signInWithPopup(auth, provider);
+    try {
+      const provider = new GoogleAuthProvider();
+      provider.addScope('email');
+      provider.addScope('profile');
+      await signInWithPopup(auth, provider);
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string; message?: string };
+      if (firebaseError.code === 'auth/configuration-not-found') {
+        alert('Google Sign-In is not enabled yet.\n\nGo to Firebase Console → Authentication → Sign-in method → Enable Google.');
+      } else if (firebaseError.code === 'auth/popup-closed-by-user') {
+        // User closed popup — do nothing
+      } else {
+        console.error('Sign-in error:', firebaseError.code, firebaseError.message);
+        alert('Sign-in failed: ' + (firebaseError.message || 'Unknown error'));
+      }
+    }
   };
 
   const signOut = async () => {
