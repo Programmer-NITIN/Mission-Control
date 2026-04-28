@@ -3,7 +3,75 @@
 import StatCard from '@/frontend/components/ui/StatCard';
 import TaskCard from '@/frontend/components/ui/TaskCard';
 import { useAppStore } from '@/frontend/store/app-store';
+import { Task } from '@/backend/data/mock-data';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from 'react';
+
+function DashboardMiniMap({ tasks }: { tasks: Task[] }) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<unknown>(null);
+
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    Promise.all([
+      import('leaflet'),
+      import('leaflet/dist/leaflet.css'),
+    ]).then(([leafletModule]) => {
+      const L = leafletModule.default || leafletModule;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+
+      const allCoords = tasks.map(t => [t.location.lat, t.location.lng] as [number, number]);
+      const center = allCoords.length > 0
+        ? [allCoords.reduce((s, c) => s + c[0], 0) / allCoords.length, allCoords.reduce((s, c) => s + c[1], 0) / allCoords.length] as [number, number]
+        : [12.5, 55] as [number, number];
+
+      const map = L.map(mapRef.current!, {
+        center,
+        zoom: 3,
+        zoomControl: false,
+        attributionControl: false,
+        dragging: false,
+        scrollWheelZoom: false,
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+      }).addTo(map);
+
+      tasks.forEach(task => {
+        const isCritical = task.severity >= 8;
+        const color = isCritical ? '#ba1a1a' : task.severity >= 5 ? '#943700' : '#006c49';
+        const icon = L.divIcon({
+          className: 'custom-marker',
+          html: `<div style="width:${isCritical ? 14 : 10}px;height:${isCritical ? 14 : 10}px;background:${color};border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
+          iconSize: [isCritical ? 14 : 10, isCritical ? 14 : 10],
+          iconAnchor: [isCritical ? 7 : 5, isCritical ? 7 : 5],
+        });
+        L.marker([task.location.lat, task.location.lng], { icon }).addTo(map);
+      });
+
+      if (allCoords.length > 0) {
+        map.fitBounds(L.latLngBounds(allCoords), { padding: [20, 20], maxZoom: 6 });
+      }
+
+      mapInstanceRef.current = map;
+    });
+
+    return () => {
+      if (mapInstanceRef.current) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (mapInstanceRef.current as any).remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [tasks]);
+
+  return (
+    <div ref={mapRef} className="relative flex-1 min-h-[280px]" />
+  );
+}
 
 export default function DashboardPage() {
   const { tasks, setSelectedTask } = useAppStore();
@@ -52,19 +120,7 @@ export default function DashboardPage() {
           <h2 className="text-headline-lg text-on-surface mb-2">Regional Activity</h2>
           <div className="card overflow-hidden flex flex-col h-full min-h-[400px] p-0">
             {/* Map Preview */}
-            <div className="relative flex-1 bg-surface-dim min-h-[280px]">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary-container/5 to-mc-secondary/5" />
-              {/* Simulated map with colored dots */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                <span className="material-symbols-outlined text-[120px] text-outline">map</span>
-              </div>
-              {/* Need markers */}
-              <div className="absolute top-[30%] left-[55%] w-4 h-4 rounded-full bg-mc-error border-2 border-white shadow-md animate-bounce" />
-              <div className="absolute top-[50%] left-[35%] w-3 h-3 rounded-full bg-mc-tertiary border-2 border-white shadow-md" />
-              {/* Volunteer markers */}
-              <div className="absolute bottom-[30%] right-[30%] w-3 h-3 rounded-full bg-mc-secondary border-2 border-white shadow-md" />
-              <div className="absolute top-[25%] left-[30%] w-3 h-3 rounded-full bg-mc-secondary border-2 border-white shadow-md" />
-            </div>
+            <DashboardMiniMap tasks={sortedTasks} />
             {/* Legend */}
             <div className="p-6 border-t border-outline-variant bg-surface-container-lowest">
               <h4 className="font-semibold text-on-surface mb-3 text-sm">Active Zones Overview</h4>

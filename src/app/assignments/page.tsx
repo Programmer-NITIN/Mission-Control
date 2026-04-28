@@ -2,7 +2,65 @@
 
 import { useAppStore } from '@/frontend/store/app-store';
 import { matchVolunteers, MatchResult } from '@/backend/services/matching-algorithm';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+function MiniMap({ lat, lng }: { lat: number; lng: number }) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<unknown>(null);
+
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    Promise.all([
+      import('leaflet'),
+      import('leaflet/dist/leaflet.css'),
+    ]).then(([leafletModule]) => {
+      const L = leafletModule.default || leafletModule;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+      });
+
+      const map = L.map(mapRef.current!, {
+        center: [lat, lng],
+        zoom: 10,
+        zoomControl: false,
+        attributionControl: false,
+        dragging: false,
+        scrollWheelZoom: false,
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+      }).addTo(map);
+
+      const icon = L.divIcon({
+        className: 'custom-marker',
+        html: `<div style="width:14px;height:14px;background:#ba1a1a;border:2.5px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
+      });
+      L.marker([lat, lng], { icon }).addTo(map);
+
+      mapInstanceRef.current = map;
+    });
+
+    return () => {
+      if (mapInstanceRef.current) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (mapInstanceRef.current as any).remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [lat, lng]);
+
+  return (
+    <div ref={mapRef} className="w-full h-40 rounded-lg border border-outline-variant overflow-hidden" />
+  );
+}
 
 function timeRemaining(createdAt: string): string {
   const created = new Date(createdAt).getTime();
@@ -126,11 +184,7 @@ export default function AssignmentsPage() {
               </div>
 
               {/* Mini Map */}
-              <div className="w-full h-40 bg-surface-variant rounded-lg border border-outline-variant relative overflow-hidden flex items-center justify-center">
-                <div className="absolute inset-0 bg-primary-container/5" />
-                <span className="material-symbols-outlined text-outline opacity-30 text-[48px]">map</span>
-                <div className="absolute top-1/2 left-1/2 w-3 h-3 bg-mc-error rounded-full border-2 border-white shadow-sm -translate-x-1/2 -translate-y-1/2" />
-              </div>
+              <MiniMap lat={task.location.lat} lng={task.location.lng} />
             </div>
           </div>
 
