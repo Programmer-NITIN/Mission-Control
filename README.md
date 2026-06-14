@@ -458,7 +458,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 ---
 
 <p align="center">
-  Built with ❤️ for the <strong>Google Solution Challenge 2026</strong>
+  Built with ❤️ by <strong>Nitin Patidar</strong>
   <br />
   <a href="https://mission-control-69450979027.us-central1.run.app">Live Demo</a> · <a href="https://github.com/Programmer-NITIN/Mission-Control/issues">Report Bug</a> · <a href="https://github.com/Programmer-NITIN/Mission-Control/issues">Request Feature</a>
 </p>
